@@ -13,7 +13,7 @@ POBLACION=10
 res_sum=0 #La suma de todas las respuestas de la funcion
 
 
-def seleccion():
+def selection(params_gen):
     pass
 
 def bin_to_int(num_bin):
@@ -84,16 +84,19 @@ def int_to_bin(value):
 # Crea los parametros del rango 1-59
 #
 def _generate_params():
-    param_ab.append(randint(1,59))
-    param_ab.append(randint(1,59))
-    param_ab_bin.append(int_to_bin(param_ab[0]))
-    param_ab_bin.append(int_to_bin(param_ab[1]))
+    aux=[]
+    aux.append(randint(1,59))
+    aux.append(randint(1,59))
+    param_ab.append(aux)
+    #param_ab_bin.append(int_to_bin(param_ab[0]))
+    #param_ab_bin.append(int_to_bin(param_ab[1]))
 
 if __name__ == "__main__":
+    _generate_params()
     _generate_params()
     print(param_ab)
     #print(param_ab_bin)
     # Iniciamos el proceso de seleccion
     #seleccion(array)
     #print(crossover([[0,1,1,0,1,0],[1,0,1,0,1,1]]))
-    ObtenerPoblacion()
+    #ObtenerPoblacion()
