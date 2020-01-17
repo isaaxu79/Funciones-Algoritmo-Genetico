@@ -10,44 +10,48 @@ res_func=[] #Guarda los resultados de la funcion
 res_fit=[] #Guarda el fit
 bestfit = []
 
-
-POBLACION=10 
-res_sum=0 #La suma de todas las respuestas de la funcion
-
-
-#
-# [1,3],[23,59],[2,5],[]
-#
 def selection(params_gen):
     #primero sacamos el resultado de la funcion y despues el fitness
+    global bestfit
     generation_function=[]
     the_best_gene=[]
     for prob in params_gen:  #[2,2]
         aux=[]
+        fits =0
+        ind = 0
         for z in funct_x: #x desma
+            if prob[0] ==0:
+                prob[0]=1
+            if prob[1]==0:
+                prob[1]=1
             var = fitProbability(z,prob[0],prob[1])
+            #fits+=abs(funct_y[ind]-var)
+            fits+=(math.pow((funct_y[ind]-var),2))
+            ind+=1
             aux.append(round(var,4))
-        fit = fitnessCal(aux)
-        fit = abs(fit)
-        generation_function.append([aux,fit,prob])
+        fits=fits/len(funct_x)
+        generation_function.append([aux,fits,prob])
 
     for da in generation_function:
         if len(the_best_gene) == 0 or len(the_best_gene)==1 :
             the_best_gene.append(da[2])
         else:
             for index in range(len(the_best_gene)):
-                if da[1] < the_best_gene[index][1]:
+                if da[1] < the_best_gene[index][1] and da[1]>0:
                     the_best_gene[index]=da[2]
                     break
+        print(da) 
+        if len(bestfit)==0 and da[1] > 0:
+            bestfit.extend(da)
+        else:
+            #3>2
+            if bestfit[1] > da[1] and da[1]> 0:
+                bestfit = da
+        
     return the_best_gene
 
     return generation_function
 
-def fitnessCal(datas):
-    valor=0
-    for dato in datas:
-        valor +=dato
-    return valor/len(datas)
 
 def fitProbability(num,a,b):
     convert_radians_a=math.radians(a*num*0.1)
@@ -66,7 +70,7 @@ def crossover(datas):
     for x in range(len(datas)):
         if x%2==0:
             corte=randint(1,len(datas[x])-2)
-            print(corte)
+            #print(corte)
         aux_par.append(datas[x][0:corte])
         aux_impar.append(datas[x][corte:len(datas[x])])
     datos = []
@@ -95,17 +99,6 @@ def mutation(datos):
                         datos[index][y] = 1
         index+=1
     return datos
-
-def ObtenerPoblacion():
-    global res_sum
-    indice = random.randint(0, len(funct_x)-1) #Obtiene un numero aleatorio entre 0 y el final del arreglo
-    print("INDICE "+str(indice))
-    x = funct_x[indice]
-    for i in range(POBLACION):
-        a =  random.uniform(0.1, 5.9)
-        b =  random.uniform(0.1, 5.9)
-        res_func.append(funcionEjecutada(x,a,b)) #Guarda los resultados de la funcion en una lista
-    res_sum=sum(res_func) #Suma de todos los resultados. 
    
 def int_to_bin(value):
     binary="{0:06b}".format(value)
@@ -133,21 +126,25 @@ if __name__ == "__main__":
     for _ in range(4):
         _generate_params()
     print(param_ab)
-    auc = selection(param_ab)
-    print("---",auc)
-    das= []
-    for aus in auc:
-        da = []
-        for a in aus:
-            da.extend(int_to_bin(a))
-        das.append(da)
-    print(das)
-    cross_data = crossover(das)
-    print(cross_data)
-    muta_data = mutation(cross_data)
-    print(muta_data)
-    new = tranform_bin_int(muta_data)
-    auc.extend(new)
-    print(auc)
+    auc = param_ab
+    for z in range(100):
+        print("gen ", z)
+        auc = selection(auc)
+        #print("---",auc)
+        das= []
+        for aus in auc:
+            da = []
+            for a in aus:
+                da.extend(int_to_bin(a))
+            das.append(da)
+        #print(das)
+        cross_data = crossover(das)
+        #print(cross_data)
+        muta_data = mutation(cross_data)
+        #print(muta_data)
+        new = tranform_bin_int(muta_data)
+        auc.extend(new)
+        #print(auc)
 
-    
+    print("la mejor seleccion: \n\n", bestfit)
+    print(funct_y)
