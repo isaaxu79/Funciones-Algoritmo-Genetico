@@ -7,14 +7,17 @@ funct_x=[0.0000,0.2500,0.5000,0.7500,1.0000,1.2500,1.5000,1.7500,2.0000,2.2500,2
 param_ab=[]
 minu=[]
 res_func=[] #Guarda los resultados de la funcion
-res_fit=[] #Guarda el fit
+gen_fit=[] #Guarda el fit
 bestfit = []
+gen_best_fit=[]
+gen_bad_fit=[]
 
 def selection(params_gen):
     #primero sacamos el resultado de la funcion y despues el fitness
     global bestfit
     generation_function=[]
     the_best_gene=[]
+    auxiliar=[]
     for prob in params_gen:  #[2,2]
         aux=[]
         fits =0
@@ -31,6 +34,7 @@ def selection(params_gen):
             aux.append(round(var,4))
         fits=fits/len(funct_x)
         generation_function.append([aux,fits,prob])
+        auxiliar.append(fits)
 
     for da in generation_function:
         if len(the_best_gene) == 0 or len(the_best_gene)==1 :
@@ -44,14 +48,15 @@ def selection(params_gen):
         if len(bestfit)==0 and da[1] > 0:
             bestfit.extend(da)
         else:
-            #3>2
             if bestfit[1] > da[1] and da[1]> 0:
                 bestfit = da
+    
+    auxiliar.sort()
+    
+    gen_best_fit.append(auxiliar[0])
+    gen_bad_fit.append(auxiliar[3])
         
     return the_best_gene
-
-    return generation_function
-
 
 def fitProbability(num,a,b):
     convert_radians_a=math.radians(a*num*0.1)
@@ -146,5 +151,9 @@ if __name__ == "__main__":
         auc.extend(new)
         #print(auc)
 
-    print("la mejor seleccion: \n\n", bestfit)
+    print("la mejor seleccion: \n\n", bestfit[0])
     print(funct_y)
+    print("\n\n----")
+    print(gen_best_fit)
+    print("\n----")
+    print(gen_bad_fit)
