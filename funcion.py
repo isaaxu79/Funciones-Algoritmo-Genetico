@@ -1,6 +1,9 @@
 from random import randint
 import math 
 import random
+import matplotlib.pyplot as plt
+import numpy as np
+
 
 funct_y=[0.0798,0.7741,0.1221,0.4388,1.0291,0.1070,-0.1179,0.3997,-0.4426,-0.7845,0.0568,-0.2774,-0.5127,0.5686,0.5437,0.0548,0.8502,0.7436,-0.2100,0.1904,0.1803]
 funct_x=[0.0000,0.2500,0.5000,0.7500,1.0000,1.2500,1.5000,1.7500,2.0000,2.2500,2.5000,2.7500,3.0000,3.2500,3.5000,3.7500,4.0000,4.2500,4.5000,4.7500,5.0000]
@@ -126,6 +129,30 @@ def tranform_bin_int(param_j):
         d.append(ls)
     return d
         
+def generateGraphic(x,y):
+    plt.plot(x, label = "Mejores")   # Dibuja el gráfico
+    plt.xlabel("abscisa")   # Inserta el título del eje X
+    plt.ylabel("ordenada")   # Inserta el título del eje Y
+    plt.ioff()   # Desactiva modo interactivo de dibujo
+    plt.ion()   # Activa modo interactivo de dibujo
+    plt.plot(y, label = "Peores")   # Dibuja datos de lista2 sin borrar datos de lista1
+    plt.ioff()   # Desactiva modo interactivo
+    # plt.plot(lista3)   # No dibuja datos de lista3
+    plt.legend()
+    plt.show()   # Fuerza dibujo de datos de lista3
+
+def getFirstGraphic(x,y):
+    plt.plot(x,label = "Y")   # Dibuja el gráfico
+    plt.xlabel("abscisa")   # Inserta el título del eje X
+    plt.ylabel("ordenada")   # Inserta el título del eje Y
+    plt.ioff()   # Desactiva modo interactivo de dibujo
+    plt.ion()   # Activa modo interactivo de dibujo
+    plt.plot(y,label = "Y´")   # Dibuja datos de lista2 sin borrar datos de lista1
+    plt.ioff()   # Desactiva modo interactivo
+    # plt.plot(lista3)   # No dibuja datos de lista3
+    plt.legend()
+    plt.show()   # Fuerza dibujo de datos de lista3
+
 
 if __name__ == "__main__":
     for _ in range(4):
@@ -152,8 +179,13 @@ if __name__ == "__main__":
         #print(auc)
 
     print("la mejor seleccion: \n\n", bestfit[0])
+    mejor_fit=bestfit[0]
+    getFirstGraphic(funct_y,mejor_fit)
     print(funct_y)
     print("\n\n----")
     print(gen_best_fit)
+    ten_best=gen_best_fit[90:]
     print("\n----")
     print(gen_bad_fit)
+    ten_worst=gen_bad_fit[90:]
+    generateGraphic(ten_best,ten_worst)
