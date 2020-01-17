@@ -21,6 +21,7 @@ res_sum=0 #La suma de todas las respuestas de la funcion
 def selection(params_gen):
     #primero sacamos el resultado de la funcion y despues el fitness
     generation_function=[]
+    the_best_gene=[]
     for prob in params_gen:  #[2,2]
         aux=[]
         for z in funct_x: #x desma
@@ -29,9 +30,17 @@ def selection(params_gen):
         fit = fitnessCal(aux)
         fit = abs(fit)
         generation_function.append([aux,fit,prob])
-    # siguiente
-    for x in generation_function:
-        print()
+
+    for da in generation_function:
+        if len(the_best_gene) == 0 or len(the_best_gene)==1 :
+            the_best_gene.append(da[2])
+        else:
+            for index in range(len(the_best_gene)):
+                if da[1] < the_best_gene[index][1]:
+                    the_best_gene[index]=da[2]
+                    break
+    return the_best_gene
+
     return generation_function
 
 def fitnessCal(datas):
@@ -72,7 +81,7 @@ def crossover(datas):
         datos.append(aux)#y0a1|y1a0
     return datos
 
-def mutation():
+def mutation(datos):
     aux = []
     index = 0
     for x in datos:
@@ -85,10 +94,7 @@ def mutation():
                     else:
                         datos[index][y] = 1
         index+=1
-            
-
-    pass
-    #for i in res_fit:
+    return datos
 
 def ObtenerPoblacion():
     global res_sum
@@ -111,12 +117,37 @@ def _generate_params():
     aux.append(randint(1,59))
     param_ab.append(aux)
 
+def tranform_bin_int(param_j):
+    d = []
+    for x in param_j:
+        ls=[]
+        a = bin_to_int(x[0:6])
+        ls.append(a)
+        a = bin_to_int(x[6:12])
+        ls.append(a)
+        d.append(ls)
+    return d
+        
+
 if __name__ == "__main__":
     for _ in range(4):
         _generate_params()
+    print(param_ab)
     auc = selection(param_ab)
-    #print(param_ab_bin)
-    # Iniciamos el proceso de seleccion
-    #seleccion(array)
-    #print(crossover([[0,1,1,0,1,0],[1,0,1,0,1,1]]))
-    #ObtenerPoblacion()
+    print("---",auc)
+    das= []
+    for aus in auc:
+        da = []
+        for a in aus:
+            da.extend(int_to_bin(a))
+        das.append(da)
+    print(das)
+    cross_data = crossover(das)
+    print(cross_data)
+    muta_data = mutation(cross_data)
+    print(muta_data)
+    new = tranform_bin_int(muta_data)
+    auc.extend(new)
+    print(auc)
+
+    
