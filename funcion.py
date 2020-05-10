@@ -203,4 +203,4 @@ if __name__ == "__main__":
     ten_best=gen_best_fit[90:]
     promedio_fit=fitProm(gen_bad_fit,gen_best_fit)
     ten_worst=gen_bad_fit[90:]
-    generateGraphic(gen_best_fit,gen_bad_fit,promedio_fit)
+    generateGraphic(gen_best_fit,gen_bad_fit,promedio_fit)  
