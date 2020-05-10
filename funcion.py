@@ -16,10 +16,10 @@ gen_best_fit=[]
 gen_bad_fit=[]
 
 def selection(params_gen):
-    #primero sacamos el resultado de la funcion y despues el fitness
     global bestfit
     generation_function=[]
     the_best_gene=[]
+    gen_pass=[]
     auxiliar=[]
     for prob in params_gen:  #[2,2]
         aux=[]
@@ -30,40 +30,56 @@ def selection(params_gen):
                 prob[0]=1
             if prob[1]==0:
                 prob[1]=1
+            if prob[0]>59:
+                prob[0]=59
+            if prob[1]>59:
+                prob[1]=59
             var = fitProbability(z,prob[0],prob[1])
-            #fits+=abs(funct_y[ind]-var)
             fits+=(math.pow((funct_y[ind]-var),2))
             ind+=1
             aux.append(round(var,4))
-        fits=fits/len(funct_x)
+        fits=fits/21
         generation_function.append([aux,fits,prob])
         auxiliar.append(fits)
-
+    ro=0
     for da in generation_function:
-        if len(the_best_gene) == 0 or len(the_best_gene)==1 :
-            the_best_gene.append(da[2])
+        if len(the_best_gene) == 0 or len(the_best_gene) == 1:
+            the_best_gene.append([da[1],da[2]])
         else:
-            for index in range(len(the_best_gene)):
-                if da[1] < the_best_gene[index][1] and da[1]>0:
-                    the_best_gene[index]=da[2]
+            for s in range(len(the_best_gene)):
+                if the_best_gene[s][0]> da[1]:
+                    the_best_gene[s] = [da[1],da[2]]
                     break
-        print(da) 
+
+        if ro == 0:
+            ro= da[1]
+        else:
+            if ro < da[1]:
+                ro = da[1]
+
+    gen_bad_fit.append(ro) 
+
+    best_fitness(generation_function)
+
+    if the_best_gene[0][0]> the_best_gene[1][0]:
+        gen_best_fit.append(the_best_gene[1][0])
+    else:
+        gen_best_fit.append(the_best_gene[0][0])
+
+    for x in the_best_gene:
+        gen_pass.append(x[1])
+    return gen_pass
+
+def best_fitness(muestra):
+    global bestfit
+    for da in muestra:
         if len(bestfit)==0 and da[1] > 0:
             bestfit.extend(da)
         else:
             if bestfit[1] > da[1] and da[1]> 0:
                 bestfit = da
-    
-    auxiliar.sort()
-    
-    gen_best_fit.append(auxiliar[0])
-    gen_bad_fit.append(auxiliar[3])
-        
-    return the_best_gene
 
 def fitProbability(num,a,b):
-    convert_radians_a=math.radians(a*num*0.1)
-    convert_radians_b = math.radians(b*num*0.1)
     return float(math.cos(a*num*0.1)*math.sin(b*num*0.1))
 
 def bin_to_int(num_bin):
@@ -78,7 +94,6 @@ def crossover(datas):
     for x in range(len(datas)):
         if x%2==0:
             corte=randint(1,len(datas[x])-2)
-            #print(corte)
         aux_par.append(datas[x][0:corte])
         aux_impar.append(datas[x][corte:len(datas[x])])
     datos = []
@@ -112,11 +127,8 @@ def int_to_bin(value):
     binary="{0:06b}".format(value)
     return [int(x) for x in str(binary)]
 
-def _generate_params():
-    aux=[]
-    aux.append(randint(1,59))
-    aux.append(randint(1,59))
-    param_ab.append(aux)
+def _generate_params(): # Poblacion inicial
+   param_ab.extend([[51, 19], [23,37], [13, 43], [12, 39]])
 
 def tranform_bin_int(param_j):
     d = []
@@ -129,63 +141,66 @@ def tranform_bin_int(param_j):
         d.append(ls)
     return d
         
-def generateGraphic(x,y):
-    plt.plot(x, label = "Mejores")   # Dibuja el gráfico
+def generateGraphic(x,y,z):
+    plt.plot(x, label = "Mejor Caso")   # Dibuja el gráfico
     plt.xlabel("abscisa")   # Inserta el título del eje X
     plt.ylabel("ordenada")   # Inserta el título del eje Y
     plt.ioff()   # Desactiva modo interactivo de dibujo
     plt.ion()   # Activa modo interactivo de dibujo
-    plt.plot(y, label = "Peores")   # Dibuja datos de lista2 sin borrar datos de lista1
+    plt.plot(y, label = "Peor Caso")   # Dibuja datos de lista2 sin borrar datos de lista1
+    plt.ioff()   # Desactiva modo interactivo
+    plt.ion()   # Activa modo interactivo de dibujo
+    plt.plot(z, label = "Caso promedio")   # Dibuja datos de lista2 sin borrar datos de lista1
     plt.ioff()   # Desactiva modo interactivo
     # plt.plot(lista3)   # No dibuja datos de lista3
     plt.legend()
     plt.show()   # Fuerza dibujo de datos de lista3
 
 def getFirstGraphic(x,y):
-    plt.plot(x,label = "Y")   # Dibuja el gráfico
+    plt.plot(x,label = "Real")   # Dibuja el gráfico
     plt.xlabel("abscisa")   # Inserta el título del eje X
     plt.ylabel("ordenada")   # Inserta el título del eje Y
     plt.ioff()   # Desactiva modo interactivo de dibujo
     plt.ion()   # Activa modo interactivo de dibujo
-    plt.plot(y,label = "Y´")   # Dibuja datos de lista2 sin borrar datos de lista1
+    plt.plot(y,label = "Generada")   # Dibuja datos de lista2 sin borrar datos de lista1
     plt.ioff()   # Desactiva modo interactivo
     # plt.plot(lista3)   # No dibuja datos de lista3
     plt.legend()
     plt.show()   # Fuerza dibujo de datos de lista3
 
+def fitProm(x, y):
+    auxs = []
+    for s in range(len(x)):
+        data = (x[s]+y[s])/2
+        auxs.append(data)
+    return auxs
+
 
 if __name__ == "__main__":
-    for _ in range(4):
-        _generate_params()
-    print(param_ab)
+    _generate_params()
+    print("----",param_ab,"----")
     auc = param_ab
     for z in range(100):
         print("gen ", z)
         auc = selection(auc)
-        #print("---",auc)
         das= []
         for aus in auc:
             da = []
             for a in aus:
                 da.extend(int_to_bin(a))
             das.append(da)
-        #print(das)
         cross_data = crossover(das)
-        #print(cross_data)
         muta_data = mutation(cross_data)
-        #print(muta_data)
         new = tranform_bin_int(muta_data)
         auc.extend(new)
-        #print(auc)
 
     print("la mejor seleccion: \n\n", bestfit[0])
+    print("A = ",bestfit[2][0]*0.1)
+    print("B = ",bestfit[2][1]*0.1)
+    print("fitness", (bestfit[1])/21)
     mejor_fit=bestfit[0]
     getFirstGraphic(funct_y,mejor_fit)
-    print(funct_y)
-    print("\n\n----")
-    print(gen_best_fit)
     ten_best=gen_best_fit[90:]
-    print("\n----")
-    print(gen_bad_fit)
+    promedio_fit=fitProm(gen_bad_fit,gen_best_fit)
     ten_worst=gen_bad_fit[90:]
-    generateGraphic(ten_best,ten_worst)
+    generateGraphic(gen_best_fit,gen_bad_fit,promedio_fit)
